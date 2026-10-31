@@ -1,0 +1,10 @@
+{
+  "name": "ghostlight",
+  "version": "1.0.0",
+  "description": "Find the ghost text your users can't see — and exorcise it.",
+  "type": "module",
+  "license": "MIT",
+  "author": "Oldlee (Mingbin Li)",
+  "scripts": { "test": "node --test test/**/*.test.js", "serve": "python3 -m http.server 5173" },
+  "devDependencies": { "fast-check": "^3.23.0" }
+}
