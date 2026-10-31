@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ghostlight — find the ghost text your users can't see</title>
+<meta name="description" content="Drop a screenshot or a palette. Ghostlight finds low-contrast 'ghost text', shows it as a haunting, and exorcises it with the nearest WCAG-passing color. Runs entirely in your browser.">
+<meta property="og:title" content="Ghostlight">
+<meta property="og:description" content="Find the ghost text your users can't see — and exorcise it.">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/fonts.css">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+
+<header class="top">
+  <a class="brand" href="./" aria-label="Ghostlight home">
+    <svg class="bulb" viewBox="0 0 40 56" aria-hidden="true"><defs><radialGradient id="bg" cx="50%" cy="40%" r="60%"><stop offset="0" stop-color="#fff6d8"/><stop offset=".55" stop-color="#ffcf6e"/><stop offset="1" stop-color="#ffb547" stop-opacity="0"/></radialGradient></defs><circle cx="20" cy="20" r="19" fill="url(#bg)" opacity=".55"/><path d="M20 6c-7 0-12 5-12 11.5 0 4.6 2.6 7.3 4.4 9.6 1.3 1.6 1.6 3 1.6 4.9h12c0-1.9.3-3.3 1.6-4.9 1.8-2.3 4.4-5 4.4-9.6C32 11 27 6 20 6z" fill="#f4e9c8"/><rect x="14" y="34" width="12" height="3" rx="1" fill="#8a7f66"/><rect x="15" y="38.5" width="10" height="3" rx="1" fill="#8a7f66"/><line x1="20" y1="42" x2="20" y2="56" stroke="#8a7f66" stroke-width="2"/></svg>
+    <span class="wordmark">Ghostlight</span>
+  </a>
+  <nav class="tabs" role="tablist" aria-label="Mode">
+    <button role="tab" aria-selected="true" aria-controls="panel-scan" id="tab-scan" class="tab">Haunt scan</button>
+    <button role="tab" aria-selected="false" aria-controls="panel-seance" id="tab-seance" class="tab">Séance palette</button>
+    <button role="tab" aria-selected="false" aria-controls="panel-about" id="tab-about" class="tab">How it works</button>
+  </nav>
+</header>
+
+<section class="possession" aria-label="Possession: simulate how other eyes see this">
+  <span class="label">Possession</span>
+  <div class="seg" role="radiogroup" aria-label="Vision simulation">
+    <button role="radio" aria-checked="true" data-sim="none">Clear sight</button>
+    <button role="radio" aria-checked="false" data-sim="protanopia">Protanopia</button>
+    <button role="radio" aria-checked="false" data-sim="deuteranopia">Deuteranopia</button>
+    <button role="radio" aria-checked="false" data-sim="tritanopia">Tritanopia</button>
+    <button role="radio" aria-checked="false" data-sim="achromatopsia">Achromatopsia</button>
+    <button role="radio" aria-checked="false" data-sim="blur">Low vision</button>
+  </div>
+  <label class="target">Target
+    <select id="target">
+      <option value="4.5" selected>AA · 4.5:1</option>
+      <option value="3">AA large · 3:1</option>
+      <option value="7">AAA · 7:1</option>
+    </select>
+  </label>
+</section>
+
+<main>
+  <!-- HAUNT SCAN -->
+  <section id="panel-scan" role="tabpanel" aria-labelledby="tab-scan" class="panel">
+    <div class="intro">
+      <h1>Find the <em>ghost text</em> your users can't see.</h1>
+      <p>Drop a screenshot, a mockup or a packaging proof. The ghost light sweeps it tile by tile, raises a ghost wherever text sinks below the contrast line, and tells you the nearest colour that would exorcise it. Nothing leaves your browser.</p>
+    </div>
+    <div class="scan-grid">
+      <div class="stage-wrap">
+        <div id="stage" class="stage" tabindex="0" aria-label="Scan stage. Drop an image here or choose a sample.">
+          <canvas id="view"></canvas>
+          <canvas id="fx" aria-hidden="true"></canvas>
+          <div id="ghosts" class="ghost-layer"></div>
+          <div id="drop" class="drop">
+            <div class="drop-inner">
+              <p class="drop-title">Drop an image to summon the ghost light</p>
+              <p class="drop-sub">PNG · JPG · WebP — or paste from clipboard</p>
+              <div class="drop-actions">
+                <label class="btn primary">Choose image<input id="file" type="file" accept="image/*" hidden></label>
+                <button class="btn" data-sample="landing">Haunted landing page</button>
+                <button class="btn" data-sample="lens">Haunted lens box</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="stage-bar">
+          <span id="status" role="status" aria-live="polite">The stage is dark.</span>
+          <span class="spacer"></span>
+          <button class="btn ghosty" id="rescan" disabled>Sweep again</button>
+          <button class="btn ghosty" id="clear" disabled>New image</button>
+        </div>
+      </div>
+      <aside class="ledger" aria-label="Hauntings">
+        <div class="score">
+          <div class="score-num" id="score">—</div>
+          <div class="score-lab">ghosts found</div>
+        </div>
+        <div class="meter" aria-hidden="true"><i id="meter"></i></div>
+        <p class="meter-lab" id="meter-lab">Legible area —</p>
+        <ol id="list" class="list"></ol>
+        <div class="ledger-actions">
+          <button class="btn primary" id="exorcise-scan" disabled>Exorcise every ghost</button>
+          <button class="btn" id="report-scan" disabled>Copy report</button>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- SÉANCE -->
+  <section id="panel-seance" role="tabpanel" aria-labelledby="tab-seance" class="panel" hidden>
+    <div class="intro">
+      <h1>Hold a <em>séance</em> with your palette.</h1>
+      <p>Every colour meets every other colour. Pairs that can't carry text fade into ghosts; one click exorcises them by moving only lightness, so your hue and chroma — your brand — survive.</p>
+    </div>
+    <div class="palette" id="palette"></div>
+    <div class="palette-actions">
+      <button class="btn" id="add-color">+ Add colour</button>
+      <button class="btn" id="preset">Load a haunted brand palette</button>
+      <span class="spacer"></span>
+      <button class="btn primary" id="exorcise-all">Exorcise all text pairs</button>
+    </div>
+    <div class="matrix-wrap"><table class="matrix" id="matrix" aria-label="Contrast matrix: rows are text colours, columns are backgrounds"></table></div>
+    <div class="export" id="export" hidden>
+      <h2>Exorcised palette</h2>
+      <div class="ex-row" id="ex-row"></div>
+      <pre id="css-out" tabindex="0"></pre>
+      <div class="palette-actions"><button class="btn" id="copy-css">Copy CSS variables</button><button class="btn" id="report-palette">Copy exorcism report</button></div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="panel-about" role="tabpanel" aria-labelledby="tab-about" class="panel" hidden>
+    <div class="intro">
+      <h1>How the <em>ghost light</em> works.</h1>
+    </div>
+    <div class="about-grid">
+      <article><h3>1 · Sweep</h3><p>The image is cut into tiles. Flat tiles (no edges) are skipped — there is no text to haunt. In every other tile, pixels are split into two luminance clusters: ink and paper.</p></article>
+      <article><h3>2 · Measure</h3><p>Ink and paper are compared with the WCAG 2.2 contrast formula. Ratios are floored, never rounded up: a 4.497 is a ghost, not a pass. Adjacent failing tiles merge into one haunting.</p></article>
+      <article><h3>3 · Exorcise</h3><p>The text colour is moved through OKLCH lightness only, in the smallest step that clears the target, keeping hue and chroma. If no lightness works, it falls back to black or white.</p></article>
+      <article><h3>4 · Possession</h3><p>Machado (2009) colour-vision matrices in linear RGB simulate protanopia, deuteranopia and tritanopia; achromatopsia uses luminance; low vision applies blur. A pair can pass for you and haunt someone else.</p></article>
+    </div>
+    <p class="fine">Ghostlight is a design aid, not a certification. WCAG contrast is one part of legibility — size, weight and real users matter too. Built with Kiro by Oldlee for Kiroween 2026 · MIT licensed.</p>
+  </section>
+</main>
+
+<footer class="foot">
+  <span>Ghostlight · runs 100% in your browser · by Oldlee</span>
+</footer>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<script type="module" src="src/ui/app.js"></script>
+</body>
+</html>
