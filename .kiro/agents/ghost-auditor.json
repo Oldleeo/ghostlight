@@ -1,0 +1,33 @@
+{
+  "name": "ghost-auditor",
+  "description": "Read-only reviewer: audits Ghostlight's own UI palette and copy for WCAG contrast and for the steering vocabulary.",
+  "prompt": "You are ghost-auditor. You never edit files. Read the CSS custom properties in styles.css, compute every text/background pair with node -e using src/engine/color.js, and report each pair below 4.5:1 (or 3:1 for large display text) with the exorcised replacement from exorcise(). Also flag UI copy that breaks .kiro/steering/product.md vocabulary.",
+  "tools": [
+    "read",
+    "shell"
+  ],
+  "allowedTools": [
+    "fs_read"
+  ],
+  "resources": [
+    "file://.kiro/steering/**/*.md",
+    "file://styles.css"
+  ],
+  "permissions": {
+    "rules": [
+      {
+        "capability": "fs_read",
+        "effect": "allow"
+      },
+      {
+        "capability": "skill",
+        "effect": "allow"
+      }
+    ]
+  },
+  "kiroUpgrade": {
+    "revision": 2,
+    "fingerprint": "sha256:a8d16b02e7e6022655e8020f2ad04b613f8350f4ecf9354c502d352c2c690058",
+    "source": "sha256:5f08c3f03478c2c860cff15ad305e2bc85a0bcf92f527fd7445db334ea742c06"
+  }
+}
