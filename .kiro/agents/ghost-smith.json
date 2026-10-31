@@ -1,0 +1,64 @@
+{
+  "name": "ghost-smith",
+  "description": "Implements Ghostlight's pure color engine from the spec, test-first, with property-based tests.",
+  "prompt": "You are ghost-smith, the engine builder for Ghostlight. Work strictly from .kiro/specs/*/tasks.md. Keep src/engine pure (no DOM). For every function write node:test examples AND fast-check properties. After each change run `npm test` and fix failures before moving on. Tick the task checkbox in tasks.md when its tests pass.",
+  "tools": [
+    "*"
+  ],
+  "allowedTools": [
+    "fs_read",
+    "fs_write",
+    "execute_bash"
+  ],
+  "resources": [
+    "file://README.md",
+    "file://.kiro/steering/**/*.md",
+    "file://.kiro/specs/**/*.md"
+  ],
+  "hooks": [
+    {
+      "name": "agentSpawn-0",
+      "trigger": "agentSpawn",
+      "action": {
+        "type": "command",
+        "command": "git status --short && git log --oneline -5"
+      },
+      "timeout": 90
+    },
+    {
+      "name": "postToolUse-0",
+      "trigger": "postToolUse",
+      "matcher": "write",
+      "action": {
+        "type": "command",
+        "command": "npm test --silent 2>&1 | tail -n 8"
+      },
+      "timeout": 90
+    }
+  ],
+  "permissions": {
+    "rules": [
+      {
+        "capability": "fs_read",
+        "effect": "allow"
+      },
+      {
+        "capability": "fs_write",
+        "effect": "allow"
+      },
+      {
+        "capability": "shell",
+        "effect": "allow"
+      },
+      {
+        "capability": "skill",
+        "effect": "allow"
+      }
+    ]
+  },
+  "kiroUpgrade": {
+    "revision": 2,
+    "fingerprint": "sha256:4b0a2b4ae58ed2c9292d3d8b854b2152571bd027f2229b02cb21b1f9a27d6640",
+    "source": "sha256:019c8508e39ebfc41c7db4baa7195ea9199b0a3a7a2ba8d6fd1c917c30948823"
+  }
+}
