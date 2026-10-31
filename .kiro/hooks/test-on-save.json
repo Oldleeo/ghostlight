@@ -1,0 +1,20 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "engine-tests-on-save",
+      "description": "Run the engine test suite (examples + property-based tests) whenever an engine file is saved.",
+      "trigger": "PostFileSave",
+      "matcher": "src/engine/.*\\.js$",
+      "action": { "type": "command", "command": "npm test --silent" },
+      "timeout": 120
+    },
+    {
+      "name": "self-audit-on-style-change",
+      "description": "Ghostlight must pass its own audit: when styles.css changes, ask the agent to re-check the UI palette.",
+      "trigger": "PostFileSave",
+      "matcher": "styles\\.css$",
+      "action": { "type": "agent", "prompt": "styles.css changed. Use src/engine/color.js to check every --text-on-surface pair defined in :root still meets 4.5:1 and list any ghosts with exorcised replacements." }
+    }
+  ]
+}
